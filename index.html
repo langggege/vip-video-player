@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP视频播放器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #4CAF50, #2E8B57);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .disclaimer {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .url-input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-play {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-play:hover {
+            background-color: #3d8b40;
+            transform: translateY(-2px);
+        }
+        
+        .btn-clear {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .websites-section {
+            margin-top: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #4CAF50;
+        }
+        
+        .websites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .website-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #eaeaea;
+        }
+        
+        .website-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .website-card i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+        
+        .website-card:hover i {
+            color: white;
+        }
+        
+        .website-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+        
+        .footer-text {
+            margin-bottom: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-icon {
+            font-size: 50px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .modal-message {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #555;
+        }
+        
+        .btn-close {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .websites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .websites-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4CAF50;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-play-circle"></i> VIP视频播放器</h1>
+            <p class="subtitle">支持大部分主流视频网站</p>
+            <div class="disclaimer">
+                注意：本工具仅供学习交流使用，请勿用于商业用途
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <label class="input-label" for="videoUrl">
+                    <i class="fas fa-link"></i> 请输入视频链接:
+                </label>
+                <input type="url" id="videoUrl" class="url-input" placeholder="例如：https://v.qq.com/x/cover/xxxxx.html" />
+                
+                <div class="button-group">
+                    <button class="btn btn-play" id="playBtn">
+                        <i class="fas fa-play"></i> 播放视频
+                    </button>
+                    <button class="btn btn-clear" id="clearBtn">
+                        <i class="fas fa-trash-alt"></i> 清空链接
+                    </button>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>正在处理视频链接，请稍候...</p>
+                </div>
+            </div>
+            
+            <div class="websites-section">
+                <div class="section-title">
+                    <i class="fas fa-film"></i> 视频网站
+                </div>
+                <div class="websites-grid" id="websitesGrid">
+                    <!-- 网站链接将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p class="footer-text">版本：1.0 | 创建日期：2025-12-25</p>
+            <p class="footer-text">仅供学习交流使用</p>
+        </footer>
+    </div>
+    
+    <!-- 模态对话框 -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="modal-title" id="modalTitle">提示</h2>
+            <p class="modal-message" id="modalMessage">正在为您播放视频...</p>
+            <button class="btn-close" id="modalCloseBtn">确定</button>
+        </div>
+    </div>
+    
+    <script>
+        // 视频网站数据
+        const websites = [
+            { name: "腾讯视频", url: "https://v.qq.com/", icon: "fas fa-play" },
+            { name: "爱奇艺", url: "https://www.iqiyi.com/", icon: "fas fa-tv" },
+            { name: "优酷", url: "https://www.youku.com/", icon: "fas fa-film" },
+            { name: "B站", url: "https://www.bilibili.com/", icon: "fab fa-bilibili" },
+            { name: "搜狐视频", url: "https://tv.sohu.com/", icon: "fas fa-video" },
+            { name: "乐视视频", url: "https://www.le.com/", icon: "fas fa-play-circle" },
+            { name: "PPTV", url: "https://www.pptv.com/", icon: "fas fa-tv" },
+            { name: "土豆视频", url: "https://www.tudou.com/", icon: "fas fa-hdd" },
+            { name: "暴风影音", url: "https://www.baofeng.com/", icon: "fas fa-wind" },
+            { name: "咪咕视频", url: "https://www.miguvideo.com/", icon: "fas fa-mobile-alt" },
+            { name: "西瓜视频", url: "https://www.ixigua.com/", icon: "fas fa-watermelon" }
+        ];
+        
+        // 初始化网站链接
+        document.addEventListener('DOMContentLoaded', function() {
+            const websitesGrid = document.getElementById('websitesGrid');
+            
+            websites.forEach(site => {
+                const card = document.createElement('div');
+                card.className = 'website-card';
+                card.innerHTML = `
+                    <i class="${site.icon}"></i>
+                    <div class="website-name">${site.name}</div>
+                `;
+                
+                card.addEventListener('click', function() {
+                    window.open(site.url, '_blank');
+                });
+                
+                websitesGrid.appendChild(card);
+            });
+            
+            // 播放按钮事件
+            document.getElementById('playBtn').addEventListener('click', playVideo);
+            
+            // 清空按钮事件
+            document.getElementById('clearBtn').addEventListener('click', clearUrl);
+            
+            // 输入框回车键事件
+            document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    playVideo();
+                }
+            });
+            
+            // 模态框关闭按钮事件
+            document.getElementById('modalCloseBtn').addEventListener('click', function() {
+                document.getElementById('messageModal').style.display = 'none';
+            });
+        });
+        
+        // 播放视频函数
+        function playVideo() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const loading = document.getElementById('loading');
+            
+            // 验证链接格式
+            if (!isValidUrl(videoUrl)) {
+                showMessage('错误', '请输入有效的视频链接！<br>链接应以 http:// 或 https:// 开头', 'fas fa-exclamation-circle', '#f44336');
+                return;
+            }
+            
+            // 显示加载动画
+            loading.style.display = 'block';
+            
+            // 模拟处理延迟
+            setTimeout(function() {
+                // 使用解析源
+                const parserUrl = `https://jx.xmflv.cc/?url=${encodeURIComponent(videoUrl)}`;
+                
+                // 在新窗口打开解析后的链接
+                try {
+                    window.open(parserUrl, '_blank');
+                    
+                    // 隐藏加载动画
+                    loading.style.display = 'none';
+                    
+                    // 显示成功消息
+                    showMessage('提示', '正在为您播放视频...<br>如果页面没有自动打开，请检查浏览器是否阻止了弹窗。', 'fas fa-check-circle', '#4CAF50');
+                } catch (e) {
+                    // 隐藏加载动画
+                    loading.style.display = 'none';
+                    
+                    // 显示错误消息
+                    showMessage('错误', `无法打开播放页面：${e.message}`, 'fas fa-exclamation-circle', '#f44336');
+                }
+            }, 1000);
+        }
+        
+        // 验证URL格式
+        function isValidUrl(url) {
+            const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+            return pattern.test(url);
+        }
+        
+        // 清空输入框
+        function clearUrl() {
+            document.getElementById('videoUrl').value = '';
+            document.getElementById('videoUrl').focus();
+        }
+        
+        // 显示消息对话框
+        function showMessage(title, message, icon, color) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            
+            // 设置图标
+            const iconElement = document.getElementById('modalIcon');
+            iconElement.innerHTML = `<i class="${icon}"></i>`;
+            iconElement.style.color = color;
+            
+            // 显示模态框
+            document.getElementById('messageModal').style.display = 'flex';
+        }
+        
+        // 点击模态框背景关闭
+        document.getElementById('messageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
